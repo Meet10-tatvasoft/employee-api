@@ -1,0 +1,39 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Maven
+target/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Environment files
+.env
+.env.*
+
+# AWS CLI credentials (never commit)
+.aws/
+
+# Generated artifacts
+artifacts/
+
+# CloudFormation packaged output (if created later)
+packaged-template.yml
