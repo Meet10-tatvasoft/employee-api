@@ -1,0 +1,83 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Employee API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/employees": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Get Employees"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Create Employee"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      }
+    },
+    "/employees/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Get Employee"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Update Employee"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Delete Employee"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      }
+    }
+  }
+}

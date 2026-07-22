@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Employee API using AWS Lambda Layer
+
+Parameters:
+
+  ArtifactBucket:
+    Type: String
+    Description: S3 Bucket containing deployment artifacts
+
+  LambdaJarKey:
+    Type: String
+    Description: Thin Lambda JAR
+
+  LayerZipKey:
+    Type: String
+    Description: Lambda Layer ZIP
+
+  OpenApiKey:
+    Type: String
+    Description: OpenAPI JSON file
+
+  FunctionName:
+    Type: String
+    Default: EmployeeApi
+
+  LayerName:
+    Type: String
+    Default: EmployeeApiDependenciesLayer
+
+  StageName:
+    Type: String
+    Default: dev
+
+Resources:
+
+  EmployeeLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: EmployeeLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  EmployeeDependenciesLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: !Ref LayerName
+      Description: Common runtime dependencies
+      CompatibleRuntimes:
+        - java17
+      Content:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref LayerZipKey
+
+  EmployeeApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref FunctionName
+      Runtime: java17
+      Handler: com.demo.handler.EmployeeApiHandler::handleRequest
+      Role: !GetAtt EmployeeLambdaRole.Arn
+      Timeout: 30
+      MemorySize: 512
+      Layers:
+        - !Ref EmployeeDependenciesLayer
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref LambdaJarKey
+
+  EmployeeApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Employee API
+      BodyS3Location:
+        Bucket: !Ref ArtifactBucket
+        Key: !Ref OpenApiKey
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  EmployeeApiPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref EmployeeApiFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${EmployeeApi}/*/*/*
+
+  EmployeeApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - EmployeeApi
+    Properties:
+      RestApiId: !Ref EmployeeApi
+
+  EmployeeApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref EmployeeApiDeployment
+      RestApiId: !Ref EmployeeApi
+      StageName: !Ref StageName
+
+Outputs:
+
+  LambdaArn:
+    Value: !GetAtt EmployeeApiFunction.Arn
+
+  ApiId:
+    Value: !Ref EmployeeApi
+
+  InvokeURL:
+    Value: !Sub https://${EmployeeApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}

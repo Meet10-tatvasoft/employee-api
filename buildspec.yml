@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+
+  build:
+    commands:
+      - echo "Building project..."
+      - mvn clean package
+
+  post_build:
+    commands:
+      - echo "Preparing deployment artifacts..."
+
+      - mkdir -p artifacts
+
+      - cd target/layer
+      - zip -r ../../artifacts/Layer.zip .
+      - cd ../..
+
+      - cp target/employee-api-1.0.jar artifacts/
+      - cp template.yml artifacts/
+      - cp openapi.json artifacts/
+
+artifacts:
+  base-directory: artifacts
+  files:
+    - '**/*'
