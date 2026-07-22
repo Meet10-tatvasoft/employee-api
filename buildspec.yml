@@ -16,13 +16,21 @@ phases:
 
       - mkdir -p artifacts
 
+      # Create Lambda Layer
       - cd target/layer
       - zip -r ../../artifacts/Layer.zip .
       - cd ../..
 
+      # Copy remaining files
       - cp target/employee-api-1.0.jar artifacts/
       - cp template.yml artifacts/
       - cp openapi.json artifacts/
+
+      # Upload to S3
+      - aws s3 cp artifacts/employee-api-1.0.jar s3://my-demo-bucket-10102004/employee-api-1.0.jar
+      - aws s3 cp artifacts/Layer.zip s3://my-demo-bucket-10102004/Layer.zip
+      - aws s3 cp artifacts/template.yml s3://my-demo-bucket-10102004/template.yml
+      - aws s3 cp artifacts/openapi.json s3://my-demo-bucket-10102004/openapi.json
 
 artifacts:
   base-directory: artifacts
