@@ -32,6 +32,45 @@ phases:
       - aws s3 cp artifacts/template.yml s3://my-demo-bucket-10102004/template.yml
       - aws s3 cp artifacts/openapi.json s3://my-demo-bucket-10102004/openapi.json
 
+      # Get New Versions of Jar,Zip and openapi.json
+
+      - JAR_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key employee-api-1.0.jar --query VersionId --output text)
+      - LAYER_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key Layer.zip --query VersionId --output text)
+      - OPENAPI_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key openapi.json --query VersionId --output text)
+
+      # Generate packaged-template.yml using python script
+
+      - |
+        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" <<EOF
+        from pathlib import Path
+        import sys
+        
+        jar_version = sys.argv[1]
+        layer_version = sys.argv[2]
+        openapi_version = sys.argv[3]
+        
+        template = Path("template.yml").read_text()
+        
+        template = template.replace(
+            "!Ref LambdaJarVersion",
+            '"' + jar_version + '"'
+        )
+        
+        template = template.replace(
+            "!Ref LayerZipVersion",
+            '"' + layer_version + '"'
+        )
+        
+        template = template.replace(
+            "!Ref OpenApiVersion",
+            '"' + openapi_version + '"'
+        )
+        
+        Path("artifacts/packaged-template.yml").write_text(template)
+        
+        print("Generated packaged-template.yml")
+        EOF
+
 artifacts:
   base-directory: artifacts
   files:

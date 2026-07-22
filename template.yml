@@ -31,6 +31,15 @@ Parameters:
     Type: String
     Default: dev
 
+  LambdaJarVersion:
+    Type: String
+
+  LayerZipVersion:
+    Type: String
+
+  OpenApiVersion:
+    Type: String
+
 Resources:
 
   EmployeeLambdaRole:
@@ -59,6 +68,7 @@ Resources:
       Content:
         S3Bucket: !Ref ArtifactBucket
         S3Key: !Ref LayerZipKey
+        S3ObjectVersion: !Ref LayerZipVersion
 
   EmployeeApiFunction:
     Type: AWS::Lambda::Function
@@ -74,6 +84,7 @@ Resources:
       Code:
         S3Bucket: !Ref ArtifactBucket
         S3Key: !Ref LambdaJarKey
+        S3ObjectVersion: !Ref LambdaJarVersion
 
   EmployeeApi:
     Type: AWS::ApiGateway::RestApi
@@ -82,6 +93,7 @@ Resources:
       BodyS3Location:
         Bucket: !Ref ArtifactBucket
         Key: !Ref OpenApiKey
+        Version: !Ref OpenApiVersion
       EndpointConfiguration:
         Types:
           - REGIONAL
