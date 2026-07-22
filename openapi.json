@@ -31,6 +31,20 @@
         }
       }
     },
+    "/demo-api": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Get Employees"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+        }
+      }
+    },
     "/employees/{id}": {
       "parameters": [
         {

@@ -31,6 +31,9 @@ public class EmployeeApiHandler implements RequestHandler<APIGatewayProxyRequest
                     if ("/employees".equals(path) || path.startsWith("/employees/")) {
                         return response(200, JsonUtil.toJson(employeeDAO.getAllEmployees()));
                     }
+                    if("/demo-api".equals(path)){
+                        return response(200, JsonUtil.toJson(employeeDAO.getAllEmployees()));
+                    }
                     break;
 
                 case "POST":
