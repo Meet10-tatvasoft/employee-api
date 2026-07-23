@@ -43,6 +43,10 @@ Parameters:
     Type: String
     Default: ""
 
+  DeploymentVersion:
+    Type: String
+    Default: ""
+
 Resources:
 
   EmployeeLambdaRole:
@@ -115,6 +119,7 @@ Resources:
       - EmployeeApi
     Properties:
       RestApiId: !Ref EmployeeApi
+      Description: !Ref DeploymentVersion
 
   EmployeeApiStage:
     Type: AWS::ApiGateway::Stage

@@ -37,19 +37,22 @@ phases:
       - JAR_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key employee-api-1.0.jar --query VersionId --output text)
       - LAYER_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key Layer.zip --query VersionId --output text)
       - OPENAPI_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key openapi.json --query VersionId --output text)
+      - DEPLOYMENT_VERSION=$(date +%Y%m%d-%H%M%S)
       - echo "Jar Version = $JAR_VERSION"
       - echo "Layer Version = $LAYER_VERSION"
       - echo "OpenAPI Version = $OPENAPI_VERSION"
+      - echo "Deployment Version = $DEPLOYMENT_VERSION"
       # Generate packaged-template.yml using python script
 
       - |
-        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" <<EOF
+        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" "$DEPLOYMENT_VERSION" <<EOF
         from pathlib import Path
         import sys
         
         jar_version = sys.argv[1]
         layer_version = sys.argv[2]
         openapi_version = sys.argv[3]
+        deployment_version = sys.argv[4]
         
         template = Path("template.yml").read_text()
         
@@ -66,6 +69,11 @@ phases:
         template = template.replace(
             "!Ref OpenApiVersion",
             '"' + openapi_version + '"'
+        )
+        
+        template = template.replace(
+            "!Ref DeploymentVersion",
+            '"' + deployment_version + '"'
         )
         
         Path("artifacts/packaged-template.yml").write_text(template)
