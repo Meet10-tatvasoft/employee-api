@@ -37,7 +37,9 @@ phases:
       - JAR_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key employee-api-1.0.jar --query VersionId --output text)
       - LAYER_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key Layer.zip --query VersionId --output text)
       - OPENAPI_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key openapi.json --query VersionId --output text)
-
+      - echo "Jar Version = $JAR_VERSION"
+      - echo "Layer Version = $LAYER_VERSION"
+      - echo "OpenAPI Version = $OPENAPI_VERSION"
       # Generate packaged-template.yml using python script
 
       - |
@@ -70,6 +72,10 @@ phases:
         
         print("Generated packaged-template.yml")
         EOF
+
+      - echo "---------------- PACKAGED TEMPLATE ----------------"
+      - cat artifacts/packaged-template.yml
+      - echo "--------------------------------------------------"
 
 artifacts:
   base-directory: artifacts
