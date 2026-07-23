@@ -46,7 +46,7 @@ phases:
       # Generate packaged-template.yml using python script
 
       - |
-        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" "DEPLOYMENT_SUFFIX" <<EOF
+        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" "$DEPLOYMENT_SUFFIX" <<EOF
         from pathlib import Path
         import sys
         
