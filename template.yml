@@ -33,12 +33,15 @@ Parameters:
 
   LambdaJarVersion:
     Type: String
+    Default: ""
 
   LayerZipVersion:
     Type: String
+    Default: ""
 
   OpenApiVersion:
     Type: String
+    Default: ""
 
 Resources:
 
