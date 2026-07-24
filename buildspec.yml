@@ -1,97 +1,43 @@
 version: 0.2
 
 phases:
+
   install:
     runtime-versions:
       java: corretto17
+    commands:
+      - echo "Installing AWS SAM CLI..."
+      - pip3 install --upgrade pip
+      - pip3 install aws-sam-cli
+      - sam --version
 
   build:
     commands:
-      - echo "Building project..."
+      - echo "Building Java application and Lambda Layer contents via Maven..."
       - mvn clean package
+      - echo "Verifying build outputs..."
+      - test -f target/employee-api-1.0.jar
+      - test -d target/layer/java/lib
 
   post_build:
     commands:
-      - echo "Preparing deployment artifacts..."
+      - echo "Validating SAM template..."
+      - sam validate --template-file template.yml
 
-      - mkdir -p artifacts
+      - echo "Running sam build..."
+      - sam build --template-file template.yml
 
-      # Create Lambda Layer
-      - cd target/layer
-      - zip -r ../../artifacts/Layer.zip .
-      - cd ../..
-
-      # Copy remaining files
-      - cp target/employee-api-1.0.jar artifacts/
-      - cp template.yml artifacts/
-      - cp openapi.json artifacts/
-
-      # Upload to S3
-      - aws s3 cp artifacts/employee-api-1.0.jar s3://my-demo-bucket-10102004/employee-api-1.0.jar
-      - aws s3 cp artifacts/Layer.zip s3://my-demo-bucket-10102004/Layer.zip
-      - aws s3 cp artifacts/template.yml s3://my-demo-bucket-10102004/template.yml
-      - aws s3 cp artifacts/openapi.json s3://my-demo-bucket-10102004/openapi.json
-
-      # Get New Versions of Jar,Zip and openapi.json
-
-      - JAR_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key employee-api-1.0.jar --query VersionId --output text)
-      - LAYER_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key Layer.zip --query VersionId --output text)
-      - OPENAPI_VERSION=$(aws s3api head-object --bucket my-demo-bucket-10102004 --key openapi.json --query VersionId --output text)
-      - DEPLOYMENT_SUFFIX=$(date +%Y%m%d%H%M%S)
-      - echo "Jar Version = $JAR_VERSION"
-      - echo "Layer Version = $LAYER_VERSION"
-      - echo "OpenAPI Version = $OPENAPI_VERSION"
-      - echo "Deployment Suffix = $DEPLOYMENT_SUFFIX"
-
-      # Generate packaged-template.yml using python script
-
-      - |
-        python3 - "$JAR_VERSION" "$LAYER_VERSION" "$OPENAPI_VERSION" "$DEPLOYMENT_SUFFIX" <<EOF
-        from pathlib import Path
-        import sys
-        
-        jar_version = sys.argv[1]
-        layer_version = sys.argv[2]
-        openapi_version = sys.argv[3]
-        deployment_suffix = sys.argv[4]
-        
-        template = Path("template.yml").read_text()
-        
-        template = template.replace(
-            "!Ref LambdaJarVersion",
-            '"' + jar_version + '"'
-        )
-        
-        template = template.replace(
-            "!Ref LayerZipVersion",
-            '"' + layer_version + '"'
-        )
-        
-        template = template.replace(
-            "!Ref OpenApiVersion",
-            '"' + openapi_version + '"'
-        )
-        new_deployment_name = f"EmployeeApiDeployment{deployment_suffix}"
-        template = template.replace(
-            "EmployeeApiDeployment:",
-            f"{new_deployment_name}:"
-        )
-        
-        template = template.replace(
-            "!Ref EmployeeApiDeployment",
-            f"!Ref {new_deployment_name}"
-        )
-        
-        Path("artifacts/packaged-template.yml").write_text(template)
-        
-        print("Generated packaged-template.yml")
-        EOF
+      - echo "Running sam package (build + upload artifacts, no deploy)..."
+      - sam package
+        --template-file .aws-sam/build/template.yaml
+        --s3-bucket "$ARTIFACT_BUCKET"
+        --s3-prefix employee-api
+        --output-template-file packaged-template.yml
 
       - echo "---------------- PACKAGED TEMPLATE ----------------"
-      - cat artifacts/packaged-template.yml
-      - echo "--------------------------------------------------"
+      - cat packaged-template.yml
+      - echo "-----------------------------------------------------"
 
 artifacts:
-  base-directory: artifacts
   files:
-    - '**/*'
+    - packaged-template.yml

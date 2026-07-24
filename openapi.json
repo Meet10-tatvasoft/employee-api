@@ -15,7 +15,9 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       },
       "post": {
@@ -27,7 +29,9 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       }
     },
@@ -41,10 +45,13 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       }
-    },"/demo-api-2": {
+    },
+    "/demo-api-2": {
       "get": {
         "responses": {
           "200": {
@@ -54,7 +61,25 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
+        }
+      }
+    },
+    "/demo-api-3": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Get Employees"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       }
     },
@@ -78,7 +103,9 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       },
       "put": {
@@ -90,7 +117,9 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       },
       "delete": {
@@ -102,7 +131,9 @@
         "x-amazon-apigateway-integration": {
           "type": "aws_proxy",
           "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:ap-south-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-south-1:686519987908:function:EmployeeApi/invocations"
+          "uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+          }
         }
       }
     }
