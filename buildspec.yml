@@ -21,6 +21,13 @@ phases:
 
   post_build:
     commands:
+      - echo "Checking required environment variables..."
+      - |
+        if [ -z "$ARTIFACT_BUCKET" ]; then
+          echo "ERROR: ARTIFACT_BUCKET environment variable is not set on this CodeBuild project."
+          exit 1
+        fi
+
       - echo "Validating SAM template..."
       - sam validate --template-file template.yml
 
