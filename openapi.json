@@ -16,7 +16,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       },
@@ -30,7 +30,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
@@ -46,7 +46,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
@@ -62,7 +62,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
@@ -78,7 +78,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
@@ -94,7 +94,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
@@ -120,7 +120,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       },
@@ -134,7 +134,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       },
@@ -148,7 +148,7 @@
           "type": "aws_proxy",
           "httpMethod": "POST",
           "uri": {
-            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}/invocations"
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeeApiFunction.Arn}:${!stageVariables.lambdaAlias}/invocations"
           }
         }
       }
