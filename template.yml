@@ -22,7 +22,7 @@ Parameters:
   # number from the LatestVersionArn stack output after any dev deploy.
   ProdFunctionVersion:
     Type: String
-    Default: "1"
+    Default: "2"
     Description: Lambda version number manually promoted to the prd alias
 
 Globals:
