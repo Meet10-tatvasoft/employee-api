@@ -34,19 +34,60 @@ phases:
       - echo "Running sam build..."
       - sam build --template-file template.yml
 
-      - echo "Running sam package (build + upload artifacts, no deploy)..."
+      - echo "Running sam package..."
       - sam package
         --template-file .aws-sam/build/template.yaml
         --s3-bucket "$ARTIFACT_BUCKET"
         --s3-prefix employee-api
         --output-template-file packaged-template.yml
 
+      - echo "Fetching current prd alias version..."
+      - |
+        CURRENT_PRD_VERSION=$(aws lambda get-alias \
+          --function-name EmployeeApi \
+          --name prd \
+          --query 'FunctionVersion' \
+          --output text 2>/dev/null || echo "")
+        if [ -z "$CURRENT_PRD_VERSION" ] || [ "$CURRENT_PRD_VERSION" == "None" ]; then
+          echo "No existing prd alias found - defaulting to version 1"
+          CURRENT_PRD_VERSION="1"
+        fi
+        echo "Current prd version: $CURRENT_PRD_VERSION"
+
+      - echo "Patching ProdFunctionVersion default in packaged-template.yml..."
+      - |
+        python3 - "$CURRENT_PRD_VERSION" <<'EOF'
+        import re
+        import sys
+        
+        version = sys.argv[1]
+        path = "packaged-template.yml"
+        
+        with open(path) as f:
+            content = f.read()
+        
+        # Matches the ProdFunctionVersion parameter block (2-space key,
+        # 4-space properties) up to and including its Default line,
+        # regardless of property order or how many properties precede it.
+        pattern = re.compile(
+            r"(  ProdFunctionVersion:\n(?:    .*\n)*?    Default: )['\"]?[^\n]*"
+        )
+        
+        new_content, count = pattern.subn(lambda m: m.group(1) + f"'{version}'", content)
+        
+        if count != 1:
+            print(f"ERROR: expected exactly 1 replacement, got {count}")
+            sys.exit(1)
+        
+        with open(path, "w") as f:
+            f.write(new_content)
+        
+        print(f"ProdFunctionVersion default set to {version}")
+        EOF
+
       - echo "---------------- PACKAGED TEMPLATE ----------------"
       - cat packaged-template.yml
       - echo "-----------------------------------------------------"
-
-      - echo "Publishing packaged template for CLI-based prd promotions..."
-      - aws s3 cp packaged-template.yml s3://$ARTIFACT_BUCKET/employee-api/packaged-template-latest.yml
 
 artifacts:
   files:
