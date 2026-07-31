@@ -45,6 +45,9 @@ phases:
       - cat packaged-template.yml
       - echo "-----------------------------------------------------"
 
+      - echo "Publishing packaged template for CLI-based prd promotions..."
+      - aws s3 cp packaged-template.yml s3://$ARTIFACT_BUCKET/employee-api/packaged-template-latest.yml
+
 artifacts:
   files:
     - packaged-template.yml
