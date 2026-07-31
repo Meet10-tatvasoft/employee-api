@@ -45,6 +45,13 @@
             <version>2.18.2</version>
         </dependency>
 
+        <!-- AWS EventBridge-->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>eventbridge</artifactId>
+            <version>2.28.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
