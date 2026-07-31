@@ -68,6 +68,8 @@ Resources:
       SkipBuild: true
     Properties:
       FunctionName: !Ref FunctionName
+      SnapStart:
+        ApplyOn: PublishedVersions
       CodeUri: target/employee-api-1.0.jar
       Handler: com.demo.handler.EmployeeApiHandler::handleRequest
       Role: !GetAtt EmployeeLambdaRole.Arn
