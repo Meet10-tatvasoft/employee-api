@@ -41,13 +41,17 @@ phases:
         --s3-prefix employee-api
         --output-template-file packaged-template.yml
 
+      - echo "Confirming CodeBuild's active identity..."
+      - aws sts get-caller-identity
+
       - echo "Fetching current prd alias version..."
       - |
         CURRENT_PRD_VERSION=$(aws lambda get-alias \
           --function-name EmployeeApi \
           --name prd \
+          --region ap-south-1 \
           --query 'FunctionVersion' \
-          --output text 2>/dev/null || echo "")
+          --output text )
         if [ -z "$CURRENT_PRD_VERSION" ] || [ "$CURRENT_PRD_VERSION" == "None" ]; then
           echo "No existing prd alias found - defaulting to version 1"
           CURRENT_PRD_VERSION="1"
