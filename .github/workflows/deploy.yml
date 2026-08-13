@@ -103,5 +103,5 @@ jobs:
           aws cloudformation deploy \
             --template-file packaged-template.yml \
             --stack-name employee-api \
-            --capabilities CAPABILITY_IAM \
+            --capabilities CAPABILITY_NAMED_IAM \
             --region ${{ env.AWS_REGION }}
