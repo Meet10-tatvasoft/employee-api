@@ -1,0 +1,99 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  ARTIFACT_BUCKET: my-demo-bucket-10102004
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # install phase
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'corretto' }
+      - name: Install AWS SAM CLI
+        run: |
+          pip3 install --upgrade pip
+          pip3 install aws-sam-cli
+          sam --version
+
+      # build phase
+      - name: Build Java application via Maven
+        run: mvn clean package
+      - name: Verify build outputs
+        run: |
+          test -f target/employee-api-1.0.jar
+          test -d target/layer/java/lib
+
+      # auth
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::686519987908:role/github-actions-deploy-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      # post_build phase
+      - name: Validate SAM template
+        run: sam validate --template-file template.yml
+      - name: sam build
+        run: sam build --template-file template.yml
+      - name: sam package
+        run: |
+          sam package \
+            --template-file .aws-sam/build/template.yaml \
+            --s3-bucket "$ARTIFACT_BUCKET" \
+            --s3-prefix employee-api \
+            --output-template-file packaged-template.yml
+      - name: Confirm active identity
+        run: aws sts get-caller-identity
+
+      - name: Fetch current prd alias version
+        id: prd_version
+        run: |
+          CURRENT_PRD_VERSION=$(aws lambda get-alias \
+            --function-name EmployeeApi \
+            --name prd \
+            --region ${{ env.AWS_REGION }} \
+            --query 'FunctionVersion' \
+            --output text)
+          if [ -z "$CURRENT_PRD_VERSION" ] || [ "$CURRENT_PRD_VERSION" == "None" ]; then
+            CURRENT_PRD_VERSION="1"
+          fi
+          echo "version=$CURRENT_PRD_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Patch ProdFunctionVersion default
+        run: |
+          python3 - "${{ steps.prd_version.outputs.version }}" <<'EOF'
+          import re, sys
+          version = sys.argv[1]
+          path = "packaged-template.yml"
+          with open(path) as f:
+              content = f.read()
+          pattern = re.compile(
+              r"(  ProdFunctionVersion:\n(?:    .*\n)*?    Default: )['\"]?[^\n]*"
+          )
+          new_content, count = pattern.subn(lambda m: m.group(1) + f"'{version}'", content)
+          if count != 1:
+              print(f"ERROR: expected exactly 1 replacement, got {count}")
+              sys.exit(1)
+          with open(path, "w") as f:
+              f.write(new_content)
+          EOF
+          cat packaged-template.yml
+
+      - name: Deploy packaged stack
+        run: |
+          aws cloudformation deploy \
+            --template-file packaged-template.yml \
+            --stack-name employee-api \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ env.AWS_REGION }}
